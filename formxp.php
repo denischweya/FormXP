@@ -2,8 +2,8 @@
 /*
 Plugin Name: Form XP
 Description: Custom table operations with form input and data display
-Version: 1.0
-Author: Your Name
+Version: 0.1.1
+Author: Denis Bosire
 */
 
 defined('ABSPATH') or die('Direct access not allowed');
