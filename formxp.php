@@ -6,7 +6,9 @@ Version: 0.1.1
 Author: Denis Bosire
 */
 
-defined('ABSPATH') or die('Direct access not allowed');
+if (! defined('ABSPATH')) {
+    exit; // Exit if accessed directly
+}
 
 // Include necessary files
 require_once plugin_dir_path(__FILE__) . 'includes/class-database-handler.php';
@@ -31,7 +33,7 @@ add_shortcode('custom_data_display', array($display_handler, 'render_data'));
 // Enqueue scripts and styles
 function enqueue_custom_scripts()
 {
-    wp_enqueue_style('custom-plugin-style', plugin_dir_url(__FILE__) . 'assets/css/styles.css');
-    wp_enqueue_script('custom-plugin-script', plugin_dir_url(__FILE__) . 'assets/js/script.js', array('jquery'), '1.0', true);
+    wp_enqueue_style('formxp-style', plugin_dir_url(__FILE__) . 'assets/css/styles.css');
+    wp_enqueue_script('formxp-script', plugin_dir_url(__FILE__) . 'assets/js/script.js', array('jquery'), '1.0', true);
 }
 add_action('wp_enqueue_scripts', 'enqueue_custom_scripts');
