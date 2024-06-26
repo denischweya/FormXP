@@ -35,5 +35,13 @@ function enqueue_custom_scripts()
 {
     wp_enqueue_style('formxp-style', plugin_dir_url(__FILE__) . 'assets/css/styles.css');
     wp_enqueue_script('formxp-script', plugin_dir_url(__FILE__) . 'assets/js/script.js', array('jquery'), '1.0', true);
+
+    // Localize the script with new data
+    $script_data_array = array(
+        'ajaxurl' => admin_url('admin-ajax.php'),
+        'nonce'   => wp_create_nonce('custom_form_nonce'),
+    );
+    wp_localize_script('formxp-script', 'customPluginVars', $script_data_array);
+
 }
 add_action('wp_enqueue_scripts', 'enqueue_custom_scripts');
