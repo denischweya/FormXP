@@ -1,53 +1,52 @@
 <?php
-
-class Database_Handler
+class Form_Handler
 {
-    private $table_name;
+    private $db_handler;
 
-    public function __construct()
+    public function __construct($db_handler)
     {
-        global $wpdb;
-        $this->table_name = $wpdb->prefix . 'custom_data';
+        $this->db_handler = $db_handler;
+        add_action('wp_ajax_submit_custom_form', array($this, 'handle_form_submission'));
+        add_action('wp_ajax_nopriv_submit_custom_form', array($this, 'handle_form_submission'));
     }
 
-    public static function create_table()
+    public function render_form()
     {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'custom_data';
-        $charset_collate = $wpdb->get_charset_collate();
-
-        $sql = "CREATE TABLE $table_name (
-            id mediumint(9) NOT NULL AUTO_INCREMENT,
-            name varchar(100) NOT NULL,
-            email varchar(100) NOT NULL,
-            message text NOT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY  (id)
-        ) $charset_collate;";
-
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
+        ob_start();
+        ?>
+<form id="custom-form">
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <textarea name="message" placeholder="Message" required></textarea>
+    <button type="submit">Submit</button>
+</form>
+<div id="form-message"></div>
+<?php
+        return ob_get_clean();
     }
 
-    public function insert_data($data)
+    public function handle_form_submission()
     {
-        global $wpdb;
-        return $wpdb->insert($this->table_name, $data);
-    }
-
-    public function get_data($search = '')
-    {
-        global $wpdb;
-        if ($search) {
-            $query = $wpdb->prepare(
-                "SELECT * FROM {$this->table_name} WHERE name LIKE %s OR email LIKE %s OR message LIKE %s",
-                '%' . $wpdb->esc_like($search) . '%',
-                '%' . $wpdb->esc_like($search) . '%',
-                '%' . $wpdb->esc_like($search) . '%'
-            );
-        } else {
-            $query = "SELECT * FROM {$this->table_name}";
+        if (!wp_verify_nonce($_POST['nonce'], 'custom_form_nonce')) {
+            wp_send_json_error('Invalid nonce');
         }
-        return $wpdb->get_results($query);
+
+        $name = sanitize_text_field($_POST['name']);
+        $email = sanitize_email($_POST['email']);
+        $message = sanitize_textarea_field($_POST['message']);
+
+        $data = array(
+            'name' => $name,
+            'email' => $email,
+            'message' => $message
+        );
+
+        $result = $this->db_handler->insert_data($data);
+
+        if ($result) {
+            wp_send_json_success('Data submitted successfully');
+        } else {
+            wp_send_json_error('Error submitting data');
+        }
     }
 }
