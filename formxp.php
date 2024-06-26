@@ -12,6 +12,8 @@ defined('ABSPATH') or die('Direct access not allowed');
 require_once plugin_dir_path(__FILE__) . 'includes/class-database-handler.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-form-handler.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-display-handler.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-api-handler.php';
+
 
 // Activation hook
 register_activation_hook(__FILE__, array('Database_Handler', 'create_table'));
