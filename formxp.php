@@ -22,6 +22,7 @@ register_activation_hook(__FILE__, array('Database_Handler', 'create_table'));
 $db_handler = new Database_Handler();
 $form_handler = new Form_Handler($db_handler);
 $display_handler = new Display_Handler($db_handler);
+$api_handler = new API_Handler($db_handler);
 
 // Register shortcodes
 add_shortcode('custom_form', array($form_handler, 'render_form'));
